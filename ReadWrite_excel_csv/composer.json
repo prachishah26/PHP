@@ -1,0 +1,17 @@
+{
+    "name": "vendor/autoload.php",
+    "autoload": {
+        "psr-4": {
+            "Vendor\\AutoloadPhp\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Prachi Shah",
+            "email": "prachishah0567@gmail.com"
+        }
+    ],
+    "require": {
+        "phpoffice/phpspreadsheet": "^1.24"
+    }
+}

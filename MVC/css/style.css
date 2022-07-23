@@ -1,0 +1,32 @@
+.title h2 {
+    text-align: center;
+    color: darkslateblue;
+}
+
+.title {
+    background-color: lavender;
+}
+
+.personalDetailsForm {
+    color: navy;
+}
+
+.subtitle {
+    color: midnightblue;
+}
+
+#submit {
+    color: aqua;
+    background-color: darkslateblue;
+}
+
+.result {
+    margin-top: 2%;
+    color: midnightblue;
+}
+
+table,
+tr,
+td {
+    border: 1px solid black;
+}
