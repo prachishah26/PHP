@@ -148,11 +148,20 @@ if ( $_POST[ 'action' ] == 'rename' ) {
 
 if ( $_POST[ 'action' ] == 'paste' ) {
     $current_path = $_POST[ 'path' ];
+    $is_cut = $_POST[ 'is_cut' ];
+    $cut_path = $_POST['cut_path'];
+
+    if($is_cut){
+        delete_all($cut_path.'/'.$_POST[ 'folder_name' ]);
+    }
+
+    
     mkdir( $current_path.'/'.$_POST[ 'folder_name' ], 0777, true );
 
     $folder = scandir( $current_path );
     $response[ 'status' ] = true;
     $response[ 'message' ] = 'Fetched all data';
+    $response['is_cut'] = $is_cut;
     $response[ 'data' ] = $folder;
 
     echo json_encode( $response );
@@ -176,4 +185,3 @@ function delete_all( $item ) {
 
 
 ?>
-

@@ -2,8 +2,11 @@ $(document).ready(function () {
     var folder_counter = 0;
     var file_counter = 0;
     let name_of_copied_file_folder;
+    var is_cut = false;
+    var cut_path_;
 
     var path = $('.back').data("path");
+
     // left panel directories and file list getting using ajax 
 
     $.ajax({
@@ -57,6 +60,7 @@ $(document).ready(function () {
         });
     })
 
+    // automatically load the file and folder for the home directory 
     $.ajax({
         url: "action.php",
         method: "POST",
@@ -214,17 +218,20 @@ $(document).ready(function () {
 
     });
 
+    // close button for modal 
     $(document).on('click', '.close', function () {
         $('#fileModal').modal('hide');
         $('#folderModal').modal('hide');
     })
 
+    // click event for single click Selection of folder or file 
     $(document).on('click', '.file-folder', function () {
         $('.file-folder').removeClass('background-color');
         $(this).addClass('background-color');
         name_of_file_folder = $(this).find('h6').text();
     })
 
+    // click event for delete button 
     $(document).on('click', '.delete', function () {
         var path = $('.back').attr('data-path');
 
@@ -257,12 +264,14 @@ $(document).ready(function () {
 
     })
 
+    // when click except file folder the background color will be removed 
     $('body').click(function (event) {
         if (!$(event.target).is('.file-folder')) {
             $('.file-folder').removeClass('background-color');
         }
     });
 
+    // click event when rename button is pressed
     $(document).on('click', '.rename', function () {
         $(".error").hide();
 
@@ -272,9 +281,9 @@ $(document).ready(function () {
         $('#renameModal').modal('show');
         $('#old_name').val('');
         $('#change_title').text("Create File");
-        
     })
 
+    // click event for rename submit button
     $(document).on('click', '#new_button', function () {
         var new_name = $('#new_name').val();
 
@@ -305,21 +314,16 @@ $(document).ready(function () {
                                     }
                                 }
                             }
-
                         } else {
                             alert("File already exists !!!");
                         }
                     }
                 });
             }
-
         }
-
-
-
     });
 
-
+    // to enter into subfolders 
     $(document).on('dblclick', '.file-folder', function () {
         var temp_path = $(".back").attr('data-path');
         var name = $(this).find('h6').text();
@@ -357,6 +361,7 @@ $(document).ready(function () {
         });
     })
 
+    // click event when back is clicked 
     $(document).on('click', '.back', function () {
         current_path = $(this).attr("data-path");
 
@@ -393,23 +398,27 @@ $(document).ready(function () {
         }
     })
     
+    // click event when copy is clicked 
     $(document).on('click','.copy',function(){
         $('.paste').prop("disabled",false);
         name_of_copied_file_folder = name_of_file_folder;
-        // console.log("name-of-copies-file-folder",name_of_copied_file_folder)
-        // console.log("hi")
     })
 
+    // click event when paste clicked 
     $(document).on('click','.paste',function(){
+        $('.paste').prop("disabled",true);
         path = $('.back').attr('data-path');
-        console.log(name_of_copied_file_folder)
+        console.log("cut_path------",cut_path_)
         
         if (name_of_file_folder != '') {
             $.ajax({
                 url: "action.php",
                 method: "POST",
-                data: { folder_name: name_of_copied_file_folder, action: 'paste', path: path },
+                data: { folder_name: name_of_copied_file_folder, action: 'paste', path: path,cut_path:cut_path_,is_cut:is_cut},
                 success: function (data) {
+                    console.log(data);
+                    is_cut = false;
+                    // console.log('is_cut',is_cut);
                     console.log(data);
                     var data_obj = $.parseJSON(data);
                     $('.content').html('');
@@ -430,10 +439,16 @@ $(document).ready(function () {
 
     })
     
+    // click event for cut button 
     $(document).on('click','.cut',function(){
+        $('.paste').prop("disabled",false);
+        name_of_copied_file_folder = name_of_file_folder;
+        cut_path_ = $('.back').attr('data-path');
+        is_cut=true;
 
     })
 
+    // validation for folder name 
     function validateFolderName(folder_name) {
         // var re = /[^<>:"/\|?*(?:aux|con|nul|prn|com[1-9]|lpt[1-9])]/;
         var re = /^[^\s^\x00-\x1f\\?*:"";<>|\/.][^\x00-\x1f\\?*:"";<>|\/]*[^\s^\x00-\x1f\\?*:"";<>|\/.]+$/g;
@@ -447,6 +462,7 @@ $(document).ready(function () {
         return true;
     }
 
+    // validation for file name 
     function validateFileName(file_name) {
 
         var re = /([a-z0-9])*\.(png|txt|jpeg|jpg|xls)$/i;
@@ -460,17 +476,7 @@ $(document).ready(function () {
         return true;
     }
 
-    // delete_all('folder');
-
-    function delete_all($item) {
-        if (is_dir($item)) {
-            array_map('delete_all', array_diff(glob("$item/{,.}*", GLOB_BRACE), array("$item/.", "$item/..")));
-            rmdir($item);
-        } else {
-            unlink($item);
-        }
-    };
-
+    // right click on file or folder then the functinalities will be shown 
     $(document).on("contextmenu",'.file-folder', function (event) {
     
         // Avoid the real one
@@ -506,5 +512,4 @@ $(document).ready(function () {
         $(".custom-menu").hide(100);
       });
 })
-
 
