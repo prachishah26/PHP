@@ -1,5 +1,4 @@
 $(document).ready(function () {
-    
 
     // left panel directories and file list getting using ajax 
     $.ajax({
@@ -46,10 +45,10 @@ $(document).ready(function () {
                     if (!(data_obj.data[i] === '.' || data_obj.data[i] === '..')) {
                         
                         if (data_obj.data[i].includes('.')) {
-                            $('.content').append(`<div class="d-flex flex-column file-folder" style="margin-right:10px;min-width:60px;"><p><i class="fa-solid fa-file d-flex justify-content-center" style="font-size: 40px;"></i></p><h6 class="d-flex" style="justify-content:center;">${data_obj.data[i]}</h6></div>`);
+                            $('.content').append(`<div class="d-flex flex-column file-folder p-2" style="margin-right:10px;min-width:60px;"><p><i class="fa-solid fa-file d-flex justify-content-center" style="font-size: 40px;"></i></p><h6 class="d-flex" style="justify-content:center;">${data_obj.data[i]}</h6></div>`);
                         }
                         else {
-                            $('.content').append(`<div class="d-flex flex-colum file-folder" style="margin-right:10px;min-width:60px;"><p><i class="fa-solid fa-folder d-flex justify-content-center" style="font-size: 40px;"></i></p><h6 class="d-flex" style="justify-content:center;">${data_obj.data[i]}</h6></div>`);
+                            $('.content').append(`<div class="d-flex flex-column file-folder p-2" style="margin-right:10px;min-width:60px;"><p><i class="fa-solid fa-folder d-flex justify-content-center" style="font-size: 40px;"></i></p><h6 class="d-flex" style="justify-content:center;">${data_obj.data[i]}</h6></div>`);
                         }
                     }
                 }
@@ -175,7 +174,7 @@ $(document).ready(function () {
                     var data_obj = $.parseJSON(data);
                     
                     if(!data_obj.data == ''){
-                        $('.directory').html("");
+                        $('.directory,.content').html("");
                         for (let i = 0; i <= data_obj.data.length; i++) {
 
                             if (!(data_obj.data[i] === '.' || data_obj.data[i] === '..')) {
@@ -248,9 +247,6 @@ $(document).ready(function () {
                         }
                     }
                 }
-
-
-                
             }
         });
 
@@ -261,6 +257,7 @@ $(document).ready(function () {
     $(document).on('click','.back',function(){
         current_path = $(this).data("path");
         path = current_path.substring(0, current_path.lastIndexOf("/"));
+        // $('.back').attr('data-path',path);
         console.log(path);
         $.ajax({
             url: "action.php",
