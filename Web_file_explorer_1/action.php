@@ -12,6 +12,18 @@ if ( isset( $_POST[ 'action' ] ) ) {
         echo json_encode( $response );
     }
 }
+if ( isset( $_POST[ 'action' ] ) ) {
+    if ( $_POST[ 'action' ] == 'fetch_directory' ) {
+        $current_path = $_POST[ 'path' ];
+        $name = $_POST['this_fname'];
+        $folder = scandir( $current_path.'/'.$name );
+        $response[ 'status' ] = true;
+        $response[ 'message' ] = 'Fetched all data';
+        $response[ 'data' ] = $folder;
+
+        echo json_encode( $response );
+    }
+}
 
 if ( isset( $_POST[ 'action' ] ) ) {
     if ( $_POST[ 'action' ] == 'fetch_files' ) {
@@ -26,30 +38,30 @@ if ( isset( $_POST[ 'action' ] ) ) {
     }
 }
 
-if ( isset( $_POST[ 'action' ] ) ) {
-    if ( $_POST[ 'action' ] == 'get_child' ) {
+// if ( isset( $_POST[ 'action' ] ) ) {
+//     if ( $_POST[ 'action' ] == 'get_child' ) {
 
-        $dir .= '/'.$_POST[ 'name' ];
+//         $dir .= '/'.$_POST[ 'name' ];
 
-        $folder = scandir( $dir );
+//         $folder = scandir( $dir );
 
-        if ( count( $folder ) > 0 ) {
-            foreach ( $folder as $name ) {
-                $output = $name;
-                if ( ! ( $output === '.' || $output === '..' ) ) {
-                    if ( strpos( $output, '.' ) !== false && strlen( $output )>3 ) {
-                        echo '<ul class="folder" data-name ="'.$output.'"><i class="fa fa-file" aria-hidden="true"></i><p style="display:inline;">'.$output.'</p></ul><br>';
+//         if ( count( $folder ) > 0 ) {
+//             foreach ( $folder as $name ) {
+//                 $output = $name;
+//                 if ( ! ( $output === '.' || $output === '..' ) ) {
+//                     if ( strpos( $output, '.' ) !== false && strlen( $output )>3 ) {
+//                         echo '<ul class="folder" data-name ="'.$output.'"><i class="fa fa-file" aria-hidden="true"></i><p style="display:inline;">'.$output.'</p></ul><br>';
 
-                    } else {
-                        echo '<ul class="folder" data-name ="'.$output.'"><i class="fa fa-folder" aria-hidden="true"></i><p style="display:inline;">'.$output.'</p></ul><br>';
-                    }
-                }
-            }
-        } else {
-            $output = 'No Folder Found';
-        }
-    }
-}
+//                     } else {
+//                         echo '<ul class="folder" data-name ="'.$output.'"><i class="fa fa-folder" aria-hidden="true"></i><p style="display:inline;">'.$output.'</p></ul><br>';
+//                     }
+//                 }
+//             }
+//         } else {
+//             $output = 'No Folder Found';
+//         }
+//     }
+// }
 
 if ( $_POST[ 'action' ] == 'create' ) {
     $current_path = $_POST[ 'path' ];
@@ -66,9 +78,14 @@ if ( $_POST[ 'action' ] == 'create' ) {
         echo json_encode( $response );
 
     } else {
-        $response[ 'status' ] = false;
-        $response[ 'message' ] = 'Folder Already Created';
-        $response[ 'data' ] = '';
+
+        mkdir( $current_path.'/'.$_POST[ 'folder_name' ].'('.$_POST[ "count" ].')', 0777, true );
+
+        $folder = scandir( $current_path );
+        $response[ 'status' ] = true;
+        $response[ 'message' ] = 'Fetched all data';
+        $response[ 'data' ] = $folder;
+
         echo json_encode( $response );
 
     }

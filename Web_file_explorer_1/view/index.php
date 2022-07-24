@@ -41,7 +41,7 @@
         <div class="row">
             <!-- left panel  -->
             <div class="col-4 left-panel ">
-                <!-- <p class='directories btn btn-primary ms-4'>Directories</p> -->
+                <p class='directories text-center bg-info' data-dir="/home/woc/Prachi/Training/PHP/Web_file_explorer_1">Directory</p>
                 <div class='directory mt-3'>
 
                 </div>
@@ -68,7 +68,7 @@
                 </div>
 
 
-                <div class="content mt-5" style='display:flex;'>
+                <div class="content mt-5" style='display:flex;flex-wrap:wrap;'>
 
                 </div>
 

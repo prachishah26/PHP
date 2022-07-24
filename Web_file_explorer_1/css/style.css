@@ -10,9 +10,11 @@ body{
 }
 .right-panel{
     padding: 20px;
+    
 }
 .left-panel{
     border-right: 1px solid black;
+    padding-right: 0px;
 }
 .btn{
     border: 1px solid black;

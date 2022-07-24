@@ -1,9 +1,10 @@
 $(document).ready(function () {
-    var folder_counter = 0;
+    var folder_counter = 1;
     var file_counter = 0;
     let name_of_copied_file_folder;
     var is_cut = false;
     var cut_path_;
+    var this_fname;
 
     var path = $('.back').data("path");
 
@@ -33,6 +34,43 @@ $(document).ready(function () {
             }
         }
     });
+
+    $(document).on('click','.folder',function(){
+        var this_folder = $(this);
+        console.log(this_folder)
+        this_fname = $(this).find('p').first().text();
+        previous_path = $('.directories').attr('data-dir');
+        new_path = previous_path+'/'+this_fname;
+        $.ajax({
+            url: "action.php",
+            method: "POST",
+            data: {
+                action: 'fetch_directory',
+                path: previous_path,
+                this_fname :this_fname
+            },
+            success: function (data) {
+                // console.log($('.directories').attr('directory'));
+                // console.log(data);
+                $('.directories').attr('data-dir',new_path);
+
+                var data_obj = $.parseJSON(data);
+    
+                for (let i = 0; i <= data_obj.data.length - 1; i++) {
+    
+                    if (!(data_obj.data[i] === '.' || data_obj.data[i] === '..')) {
+                        if (data_obj.data[i].includes('.')) {
+                            this_folder.after(`<ul class='folder' data-name='${data_obj.data[i]}'><i class="fa fa-file" aria-hidden="true"></i><p style='display: inline;'>${data_obj.data[i]}</p></ul>`);
+                        }
+                        else {
+                            this_folder.after(`<ul class='folder' data-name='${data_obj.data[i]}'><i class="fa fa-folder" aria-hidden="true"></i><p style='display: inline;'>${data_obj.data[i]}</p></ul>`);
+                        }
+                    }
+                }
+            }
+        });
+
+    })
 
     // right panel folders getting using ajax 
     $(".home").on('click', function () {
@@ -83,24 +121,6 @@ $(document).ready(function () {
         }
     });
 
-    // for subdirectories 
-    $(document).on("click", ".folder", function () {
-        var this_folder = $(this);
-
-        var name = $(this).data('name');
-        $.ajax({
-            url: "action.php",
-            method: "POST",
-            data: {
-                action: 'get_child',
-                name: name,
-            },
-            success: function (data) {
-                this_folder.append(data);
-            }
-        });
-    })
-
     // for create new folder 
     $(document).on('click', '.create', function () {
         // console.log($(".back").attr("data-path"));
@@ -126,22 +146,23 @@ $(document).ready(function () {
                 $.ajax({
                     url: "action.php",
                     method: "POST",
-                    data: { folder_name: folder_name, old_name: old_name, action: action, path: path },
+                    data: { folder_name: folder_name, old_name: old_name, action: action, path: path ,count:folder_counter},
                     success: function (data) {
+                        ++folder_counter;
                         $('#folderModal').modal('hide');
                         var data_obj = $.parseJSON(data);
 
                         if (!data_obj.data == '') {
-                            $('.directory,.content').html("");
+                            $('.content').html("");
                             for (let i = 0; i <= data_obj.data.length - 1; i++) {
 
                                 if (!(data_obj.data[i] === '.' || data_obj.data[i] === '..')) {
                                     if (data_obj.data[i].includes('.')) {
-                                        $('.directory').append(`<ul data-name='${data_obj.data[i]}'><i class="fa fa-file" aria-hidden="true"></i>${data_obj.data[i]}</ul>`);
+                                        // $('.directory').append(`<ul data-name='${data_obj.data[i]}'><i class="fa fa-file" aria-hidden="true"></i>${data_obj.data[i]}</ul>`);
                                         $('.content').append(`<div class="d-flex flex-column file-folder" style="margin-right:10px;min-width:60px;"><p><i class="fa-solid fa-file d-flex justify-content-center" style="font-size: 40px;"></i></p><h6 class="d-flex" style="justify-content:center;">${data_obj.data[i]}</h6></div>`);
                                     }
                                     else {
-                                        $('.directory').append(`<ul data-name='${data_obj.data[i]}'><i class="fa fa-folder" aria-hidden="true"></i>${data_obj.data[i]}</ul>`);
+                                        // $('.directory').append(`<ul data-name='${data_obj.data[i]}'><i class="fa fa-folder" aria-hidden="true"></i>${data_obj.data[i]}</ul>`);
                                         $('.content').append(`<div class="d-flex flex-column file-folder" style="margin-right:10px;min-width:60px;"><p><i class="fa-solid fa-folder d-flex justify-content-center" style="font-size: 40px;"></i></p><h6 class="d-flex" style="justify-content:center;">${data_obj.data[i]}</h6></div>`);
                                     }
                                 }
@@ -191,15 +212,15 @@ $(document).ready(function () {
                         var data_obj = $.parseJSON(data);
 
                         if (!data_obj.data == '') {
-                            $('.directory,.content').html("");
+                            $('.content').html("");
                             for (let i = 0; i <= data_obj.data.length; i++) {
                                 if (!(data_obj.data[i] === '.' || data_obj.data[i] === '..')) {
                                     if (data_obj.data[i].includes('.')) {
-                                        $('.directory').append(`<ul data-name='${data_obj.data[i]}'><i class="fa fa-file" aria-hidden="true"></i>${data_obj.data[i]}</ul>`);
+                                        // $('.directory').append(`<ul data-name='${data_obj.data[i]}'><i class="fa fa-file" aria-hidden="true"></i>${data_obj.data[i]}</ul>`);
                                         $('.content').append(`<div class="d-flex flex-column file-folder" style="margin-right:10px;min-width:60px;"><p><i class="fa-solid fa-file d-flex justify-content-center" style="font-size: 40px;"></i></p><h6 class="d-flex" style="justify-content:center;">${data_obj.data[i]}</h6></div>`);
                                     }
                                     else {
-                                        $('.directory').append(`<ul data-name='${data_obj.data[i]}'><i class="fa fa-folder" aria-hidden="true"></i>${data_obj.data[i]}</ul>`);
+                                        // $('.directory').append(`<ul data-name='${data_obj.data[i]}'><i class="fa fa-folder" aria-hidden="true"></i>${data_obj.data[i]}</ul>`);
                                         $('.content').append(`<div class="d-flex flex-column file-folder" style="margin-right:10px;min-width:60px;"><p><i class="fa-solid fa-folder d-flex justify-content-center" style="font-size: 40px;"></i></p><h6 class="d-flex" style="justify-content:center;">${data_obj.data[i]}</h6></div>`);
                                     }
                                 }
@@ -301,15 +322,15 @@ $(document).ready(function () {
                         var data_obj = $.parseJSON(data);
 
                         if (!data_obj.data == '') {
-                            $('.directory,.content').html("");
+                            $('.content').html("");
                             for (let i = 0; i <= data_obj.data.length; i++) {
                                 if (!(data_obj.data[i] === '.' || data_obj.data[i] === '..')) {
                                     if (data_obj.data[i].includes('.')) {
-                                        $('.directory').append(`<ul data-name='${data_obj.data[i]}'><i class="fa fa-file" aria-hidden="true"></i>${data_obj.data[i]}</ul>`);
+                                        // $('.directory').append(`<ul data-name='${data_obj.data[i]}'><i class="fa fa-file" aria-hidden="true"></i>${data_obj.data[i]}</ul>`);
                                         $('.content').append(`<div class="d-flex flex-column file-folder" style="margin-right:10px;min-width:60px;"><p><i class="fa-solid fa-file d-flex justify-content-center" style="font-size: 40px;"></i></p><h6 class="d-flex" style="justify-content:center;">${data_obj.data[i]}</h6></div>`);
                                     }
                                     else {
-                                        $('.directory').append(`<ul data-name='${data_obj.data[i]}'><i class="fa fa-folder" aria-hidden="true"></i>${data_obj.data[i]}</ul>`);
+                                        // $('.directory').append(`<ul data-name='${data_obj.data[i]}'><i class="fa fa-folder" aria-hidden="true"></i>${data_obj.data[i]}</ul>`);
                                         $('.content').append(`<div class="d-flex flex-column file-folder" style="margin-right:10px;min-width:60px;"><p><i class="fa-solid fa-folder d-flex justify-content-center" style="font-size: 40px;"></i></p><h6 class="d-flex" style="justify-content:center;">${data_obj.data[i]}</h6></div>`);
                                     }
                                 }
@@ -366,6 +387,7 @@ $(document).ready(function () {
         current_path = $(this).attr("data-path");
 
         if (current_path == "/home/woc/Prachi/Training/PHP/Web_file_explorer_1") {
+            alert("This is the main directory !")
 
         }
         else {
