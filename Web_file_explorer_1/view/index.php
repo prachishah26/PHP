@@ -12,6 +12,7 @@
 
     <!-- css -->
     <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/filetree.css" type="text/css" >
 
     <!-- jquery -->
 
@@ -42,7 +43,7 @@
             <!-- left panel  -->
             <div class="col-4 left-panel ">
                 <p class='directories text-center ' data-dir="/home/woc/Prachi/Training/PHP/Web_file_explorer_1">Directory tree view</p>
-                <div class='directory mt-3'>
+                <div class='directory mt-3' id='container'>
 
                 </div>
             </div>

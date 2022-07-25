@@ -10,6 +10,7 @@ body{
 }
 .right-panel{
     padding: 20px;
+    overflow-y: scroll;
     
 }
 .left-panel{
@@ -30,7 +31,7 @@ i{
 .heading{
     border-bottom: 1px solid black;
     padding: 10px;
-    background-color: antiquewhite;
+    background-color: lightblue;
 }
 .heading h3{
     margin: 0px;
