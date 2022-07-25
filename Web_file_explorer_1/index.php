@@ -1,4 +1,4 @@
 <?php
 require 'view/index.php';
-require 'Foldertree.php';
+require 'foldertree.php';
 ?>

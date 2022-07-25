@@ -6,7 +6,6 @@ class treeview {
 	private $folder;
 	
 	function __construct( $path ) {
-		
 		$files = array();	
 		
 		if( file_exists( $path)) {
@@ -23,7 +22,6 @@ class treeview {
 	}
 
 	function create_tree( ) {
-			
 		if( count( $this->files ) > 2 ) { /* First 2 entries are . and ..  -skip them */
 			natcasesort( $this->files );
 			$list = '<ul class="filetree" style="display: none;">';
@@ -45,9 +43,7 @@ class treeview {
 		}
 	}
 }
-
 $path = urldecode( $_REQUEST['dir'] );
 $tree = new treeview( $path );
 echo $tree->create_tree();
-
 ?>
