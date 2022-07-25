@@ -15,7 +15,7 @@ if ( isset( $_POST[ 'action' ] ) ) {
 if ( isset( $_POST[ 'action' ] ) ) {
     if ( $_POST[ 'action' ] == 'fetch_directory' ) {
         $current_path = $_POST[ 'path' ];
-        $name = $_POST['this_fname'];
+        $name = $_POST[ 'this_fname' ];
         $folder = scandir( $current_path.'/'.$name );
         $response[ 'status' ] = true;
         $response[ 'message' ] = 'Fetched all data';
@@ -65,8 +65,8 @@ if ( isset( $_POST[ 'action' ] ) ) {
 
 if ( $_POST[ 'action' ] == 'create' ) {
     $current_path = $_POST[ 'path' ];
-    
-    if ( !file_exists($current_path.'/'.$_POST[ 'folder_name' ] ) ) {
+
+    if ( !file_exists( $current_path.'/'.$_POST[ 'folder_name' ] ) ) {
 
         mkdir( $current_path.'/'.$_POST[ 'folder_name' ], 0777, true );
 
@@ -79,7 +79,7 @@ if ( $_POST[ 'action' ] == 'create' ) {
 
     } else {
 
-        mkdir( $current_path.'/'.$_POST[ 'folder_name' ].'('.$_POST[ "count" ].')', 0777, true );
+        mkdir( $current_path.'/'.$_POST[ 'folder_name' ].'('.$_POST[ 'count' ].')', 0777, true );
 
         $folder = scandir( $current_path );
         $response[ 'status' ] = true;
@@ -93,7 +93,7 @@ if ( $_POST[ 'action' ] == 'create' ) {
 
 if ( $_POST[ 'action' ] == 'create_file' ) {
     $current_path = $_POST[ 'path' ];
-    if ( !file_exists( $current_path.'/'.$_POST[ 'file_name' ]  ) ) {
+    if ( !file_exists( $current_path.'/'.$_POST[ 'file_name' ] ) ) {
 
         $file = fopen( $current_path.'/'.$_POST[ 'file_name' ], 'w' );
         $folder = scandir( $current_path );
@@ -133,11 +133,11 @@ if ( isset( $_POST[ 'action' ] ) ) {
 
 if ( isset( $_POST[ 'action' ] ) ) {
     if ( $_POST[ 'action' ] == 'delete' ) {
-        
+
         $current_path = $_POST[ 'path' ];
-        
-        // rmdir( $current_path.'/'.$_POST[ 'name' ]);
-        delete_all($current_path.'/'.$_POST[ 'name' ]);
+
+        // rmdir( $current_path.'/'.$_POST[ 'name' ] );
+        delete_all( $current_path.'/'.$_POST[ 'name' ] );
         $folder = scandir( $current_path );
         $response[ 'status' ] = true;
         $response[ 'message' ] = 'Fetched all data';
@@ -149,45 +149,48 @@ if ( isset( $_POST[ 'action' ] ) ) {
 
 if ( $_POST[ 'action' ] == 'rename' ) {
     $current_path = $_POST[ 'path' ];
-    
-    
 
-        rename( $current_path.'/'.$_POST[ 'old_name' ],$current_path.'/'.$_POST[ 'new_name' ] );
+    rename( $current_path.'/'.$_POST[ 'old_name' ], $current_path.'/'.$_POST[ 'new_name' ] );
 
-        $folder = scandir( $current_path );
-        $response[ 'status' ] = true;
-        $response[ 'message' ] = 'Fetched all data';
-        $response[ 'data' ] = $folder;
+    $folder = scandir( $current_path );
+    $response[ 'status' ] = true;
+    $response[ 'message' ] = 'Fetched all data';
+    $response[ 'data' ] = $folder;
 
-        echo json_encode( $response );
+    echo json_encode( $response );
 
 }
 
 if ( $_POST[ 'action' ] == 'paste' ) {
     $current_path = $_POST[ 'path' ];
     $is_cut = $_POST[ 'is_cut' ];
-    $cut_path = $_POST['cut_path'];
-
-    if($is_cut){
-        delete_all($cut_path.'/'.$_POST[ 'folder_name' ]);
-    }
+    $cut_path = $_POST[ 'cut_path' ];
+    $path_of_copied_folder = $_POST['path_of_copied_folder'];
 
     
-    mkdir( $current_path.'/'.$_POST[ 'folder_name' ], 0777, true );
 
+    $src = $path_of_copied_folder.'/'.$_POST[ 'folder_name' ];
+
+    $dst = $current_path.'/'.$_POST[ 'folder_name' ];
+
+    custom_copy( $src, $dst );
+
+    if ( $is_cut ) {
+        delete_all( $cut_path.'/'.$_POST[ 'folder_name' ] );
+    }
+
+    // mkdir( $current_path.'/'.$_POST[ 'folder_name' ], 0777, true );
+
+    // $folder = scandir( $current_path );
     $folder = scandir( $current_path );
     $response[ 'status' ] = true;
     $response[ 'message' ] = 'Fetched all data';
-    $response['is_cut'] = $is_cut;
+    $response[ 'is_cut' ] = $is_cut;
     $response[ 'data' ] = $folder;
 
     echo json_encode( $response );
     // echo $current_path;
-
 }
-
-
-
 
 function delete_all( $item ) {
     if ( is_dir( $item ) ) {
@@ -196,9 +199,35 @@ function delete_all( $item ) {
     } else {
         unlink( $item );
     }
-};
+}
+;
 
-
-
-
+function custom_copy($src, $dst) { 
+   
+    // open the source directory
+    $dir = opendir($src); 
+   
+    // Make the destination directory if not exist
+    @mkdir($dst); 
+   
+    // Loop through the files in source directory
+    foreach (scandir($src) as $file) { 
+   
+        if (( $file != '.' ) && ( $file != '..' )) { 
+            if ( is_dir($src . '/' . $file) ) 
+            { 
+   
+                // Recursively calling custom copy function
+                // for sub directory 
+                custom_copy($src . '/' . $file, $dst . '/' . $file); 
+   
+            } 
+            else { 
+                copy($src . '/' . $file, $dst . '/' . $file); 
+            } 
+        } 
+    } 
+   
+    closedir($dir);
+}  
 ?>

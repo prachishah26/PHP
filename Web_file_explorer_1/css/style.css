@@ -68,3 +68,7 @@ i{
 .custom-menu li:hover {
     background-color: #DEF;
 }
+
+.paste{
+    border: 1px solid black !important;
+}

@@ -41,7 +41,7 @@
         <div class="row">
             <!-- left panel  -->
             <div class="col-4 left-panel ">
-                <p class='directories text-center bg-info' data-dir="/home/woc/Prachi/Training/PHP/Web_file_explorer_1">Directory</p>
+                <p class='directories text-center ' data-dir="/home/woc/Prachi/Training/PHP/Web_file_explorer_1">Directory tree view</p>
                 <div class='directory mt-3'>
 
                 </div>

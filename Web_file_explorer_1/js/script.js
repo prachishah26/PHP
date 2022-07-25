@@ -1,4 +1,7 @@
 $(document).ready(function () {
+    $('.paste').prop('disabled',true);
+
+
     var folder_counter = 1;
     var file_counter = 0;
     let name_of_copied_file_folder;
@@ -419,29 +422,32 @@ $(document).ready(function () {
             });
         }
     })
-    
+    var path_of_copied_folder;
     // click event when copy is clicked 
     $(document).on('click','.copy',function(){
         $('.paste').prop("disabled",false);
         name_of_copied_file_folder = name_of_file_folder;
+        path_of_copied_folder = $('.back').attr('data-path');
     })
 
     // click event when paste clicked 
     $(document).on('click','.paste',function(){
         $('.paste').prop("disabled",true);
         path = $('.back').attr('data-path');
-        console.log("cut_path------",cut_path_)
+        // console.log("cut_path------",cut_path_)
+        console.log("real path",path_of_copied_folder);
+        console.log("paste path",path)
         
         if (name_of_file_folder != '') {
             $.ajax({
                 url: "action.php",
                 method: "POST",
-                data: { folder_name: name_of_copied_file_folder, action: 'paste', path: path,cut_path:cut_path_,is_cut:is_cut},
+                data: { folder_name: name_of_copied_file_folder, action: 'paste', path: path,cut_path:cut_path_,is_cut:is_cut,path_of_copied_folder:path_of_copied_folder},
                 success: function (data) {
-                    console.log(data);
+                    // console.log(data);
                     is_cut = false;
                     // console.log('is_cut',is_cut);
-                    console.log(data);
+                    // console.log(data);
                     var data_obj = $.parseJSON(data);
                     $('.content').html('');
                     for (let i = 0; i <= data_obj.data.length - 1; i++) {
@@ -465,6 +471,7 @@ $(document).ready(function () {
     $(document).on('click','.cut',function(){
         $('.paste').prop("disabled",false);
         name_of_copied_file_folder = name_of_file_folder;
+        path_of_copied_folder = $('.back').attr('data-path');
         cut_path_ = $('.back').attr('data-path');
         is_cut=true;
 
