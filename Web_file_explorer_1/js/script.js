@@ -1,7 +1,6 @@
 $(document).ready(function () {
     $('.paste').prop('disabled', true);
 
-
     // Global variables 
     var folder_counter = 1, name_of_copied_file_folder, cut_path_, this_fname;
     var is_cut = false;
@@ -96,7 +95,7 @@ $(document).ready(function () {
                                         $('.content').append(`<div class="d-flex flex-column file-folder" style="margin-right:10px;min-width:60px;"><p><img src="images/file.png" alt=""></p><h6 class="d-flex" style="justify-content:center;">${data_obj.data[i]}</h6></div>`);
                                     }
                                     else {
-                                       
+
                                         $('.content').append(`<div class="d-flex flex-column file-folder" style="margin-right:10px;min-width:60px;"><p><img src="images/folder.png" alt=""></p><h6 class="d-flex" style="justify-content:center;">${data_obj.data[i]}</h6></div>`);
                                     }
                                 }
@@ -117,7 +116,6 @@ $(document).ready(function () {
     $(document).on('click', '.add-file', function () {
 
         $(".error").hide();
-
         $('#action').val("create_file");
         $('#file_name').val('');
         $('#file_button').val('Create');
@@ -145,14 +143,14 @@ $(document).ready(function () {
 
                         if (!data_obj.data == '') {
                             $('.content').html("");
-                            for (let i = 0; i <= data_obj.data.length; i++) {
+                            for (let i = 0; i <= data_obj.data.length - 1; i++) {
                                 if (!(data_obj.data[i] === '.' || data_obj.data[i] === '..')) {
                                     if (data_obj.data[i].includes('.')) {
-                                    
+
                                         $('.content').append(`<div class="d-flex flex-column file-folder" style="margin-right:10px;min-width:60px;"><p><img src="images/file.png" alt=""></p><h6 class="d-flex" style="justify-content:center;">${data_obj.data[i]}</h6></div>`);
                                     }
                                     else {
-                                        
+
                                         $('.content').append(`<div class="d-flex flex-column file-folder" style="margin-right:10px;min-width:60px;"><p><img src="images/folder.png" alt=""></p><h6 class="d-flex" style="justify-content:center;">${data_obj.data[i]}</h6></div>`);
                                     }
                                 }
@@ -179,6 +177,7 @@ $(document).ready(function () {
         $('.file-folder').removeClass('background-color');
         $(this).addClass('background-color');
         name_of_file_folder = $(this).find('h6').text();
+
     })
 
     // click event for delete button 
@@ -252,14 +251,15 @@ $(document).ready(function () {
 
                         if (!data_obj.data == '') {
                             $('.content').html("");
-                            for (let i = 0; i <= data_obj.data.length; i++) {
+                            for (let i = 0; i <= data_obj.data.length - 1; i++) {
                                 if (!(data_obj.data[i] === '.' || data_obj.data[i] === '..')) {
                                     if (data_obj.data[i].includes('.')) {
-                                        
-                                        $('.content').append(`<div class="d-flex flex-column file-folder" style="margin-right:10px;min-width:60px;"><p><img src="images/file.png" alt=""></p><h6 class="d-flex" style="justify-content:center;">${data_obj.data[i]}</h6></div>`);
+
+                                        $('.content').append(`<div
+                                         class="d-flex flex-column file-folder" style="margin-right:10px;min-width:60px;"><p><img src="images/file.png" alt=""></p><h6 class="d-flex" style="justify-content:center;">${data_obj.data[i]}</h6></div>`);
                                     }
                                     else {
-                                       
+
                                         $('.content').append(`<div class="d-flex flex-column file-folder" style="margin-right:10px;min-width:60px;"><p><img src="images/folder.png" alt=""></p><h6 class="d-flex" style="justify-content:center;">${data_obj.data[i]}</h6></div>`);
                                     }
                                 }
@@ -275,9 +275,16 @@ $(document).ready(function () {
 
     // to enter into subfolders 
     $(document).on('dblclick', '.file-folder', function () {
+        
         var temp_path = $(".back").attr('data-path');
         var name = $(this).find('h6').text();
         var updated_path = temp_path + '/' + name;
+
+        $("li.folder a").each(function (index) {
+            if ($(this).text() == name) {
+                $(this).trigger("click");
+            }
+        });
 
         // $(".back").attr("data-path",updated_path);
         $.ajax({
@@ -314,6 +321,13 @@ $(document).ready(function () {
     // click event when back is clicked 
     $(document).on('click', '.back', function () {
         current_path = $(this).attr("data-path");
+
+        var last_value = current_path.split('/').pop();
+        $("li.folder a").each(function (index) {
+            if ($(this).text() == last_value) {
+                $(this).trigger("click");
+            }
+        });
 
         if (current_path == "/home/woc/Prachi/Training/PHP/Web_file_explorer_1") {
             alert("This is the main directory !")
@@ -458,51 +472,86 @@ $(document).ready(function () {
         $(".custom-menu").hide(100);
     });
 
-    // tree view ---------------------------------
+    // directory tree view ---------------------------------
 
-    $( '#container' ).html( '<ul class="filetree start"><li class="wait">' + 'Generating Tree...' + '<li></ul>' );
-	
-	getfilelist( $('#container') , '/home/woc/Prachi/Training/PHP/Web_file_explorer_1' );
-	
-	function getfilelist( cont, root ) {
-	
-		$( cont ).addClass( 'wait' );
-			
-		$.post( 'foldertree.php', { dir: root }, function( data ) {
-	
-			$( cont ).find( '.start' ).html( '' );
-			$( cont ).removeClass( 'wait' ).append( data );
-			if( 'Sample' == root ) 
-				$( cont ).find('UL:hidden').show();
-			else 
-				$( cont ).find('UL:hidden').slideDown({ duration: 500, easing: null });
-			
-		});
-	}
+    $('#container').html('<ul class="filetree start"><li class="wait">' + 'Generating Tree...' + '<li></ul>');
 
+    getfilelist($('#container'), '/home/woc/Prachi/Training/PHP/Web_file_explorer_1');
 
-    $( '#container' ).on('click', 'li a', function() {
-		var entry = $(this).parent();
-		
-		if( entry.hasClass('folder') ) {
-			if( entry.hasClass('collapsed') ) {
-						
-				entry.find('ul').remove();
-				getfilelist( entry, escape( $(this).attr('rel') ));
-				entry.removeClass('collapsed').addClass('expanded');
-			}
-			else {
-				
-				entry.find('ul').slideUp({ duration: 500, easing: null });
-				entry.removeClass('expanded').addClass('collapsed');
-			}
-		} else {
-			$( '#selected_file' ).text( "File:  " + $(this).attr( 'rel' ));
-		}
-	return false;
-	});
+    function getfilelist(cont, root) {
 
+        $(cont).addClass('wait');
 
+        $.post('foldertree.php', { dir: root }, function (data) {
+
+            $(cont).find('.start').html('');
+            $(cont).removeClass('wait').append(data);
+            if ('Sample' == root)
+                $(cont).find('UL:hidden').show();
+            else
+                $(cont).find('UL:hidden').slideDown({ duration: 500, easing: null });
+        });
+    }
+
+    $('#container').on('click', 'li a', function () {
+        var entry = $(this).parent();
+
+        if (entry.hasClass('folder')) {
+            if (entry.hasClass('collapsed')) {
+
+                entry.find('ul').remove();
+                getfilelist(entry, escape($(this).attr('rel')));
+                entry.removeClass('collapsed').addClass('expanded');
+            }
+            else {
+                entry.find('ul').slideUp({ duration: 500, easing: null });
+                entry.removeClass('expanded').addClass('collapsed');
+            }
+        } else {
+            $('#selected_file').text("File:  " + $(this).attr('rel'));
+        }
+        return false;
+    });
+
+    $('#container').on('click', 'li.folder a', function () {
+        var this_folder = $(this).text();
+        console.log(this_folder)
+        path = $('.back').attr('data-path');
+
+        if (path.includes(this_folder)) {
+            path = path.substring(0, path.lastIndexOf('/' + this_folder));
+            $('.back').attr('data-path', path);
+            console.log(path)
+        }
+        else {
+            $('.back').attr('data-path', path + '/' + this_folder);
+            path = $('.back').attr('data-path');
+            console.log(path)
+        }
+
+        $.ajax({
+            url: "action.php",
+            method: "POST",
+            data: {
+                action: 'fetch_files',
+                path: path
+            },
+            success: function (data) {
+                var data_obj = $.parseJSON(data);
+                $('.content').html("");
+                for (let i = 0; i <= data_obj.data.length - 1; i++) {
+                    if (!(data_obj.data[i] === '.' || data_obj.data[i] === '..')) {
+                        if (data_obj.data[i].includes('.')) {
+                            $('.content').append(`<div class="d-flex flex-column file-folder p-2" style="margin-right:10px;min-width:60px;"><p><img src="images/file.png" alt=""></p><h6 class="d-flex" style="justify-content:center;">${data_obj.data[i]}</h6></div>`);
+                        }
+                        else {
+                            $('.content').append(`<div class="d-flex flex-column file-folder p-2" style="margin-right:10px;min-width:60px;"><p><img src="images/folder.png" alt=""></p><h6 class="d-flex" style="justify-content:center;">${data_obj.data[i]}</h6></div>`);
+                        }
+                    }
+                }
+            }
+        });
+
+    })
 
 })
-
