@@ -2,12 +2,15 @@ $(document).ready(function () {
     $('.paste').prop('disabled', true);
 
     // Global variables 
-    var folder_counter = 1, name_of_copied_file_folder, cut_path_, this_fname;
+    var folder_counter = 1, name_of_copied_file_folder, cut_path_;
     var is_cut = false;
     var path = $('.back').data("path");
 
     // right panel folders getting using ajax 
     $(".home").on('click', function () {
+        $(".back").attr('data-path','/home/woc/Prachi/Training/PHP/Web_file_explorer_1')
+        path = $('.back').attr("data-path");
+
         $.ajax({
             url: "action.php",
             method: "POST",
@@ -18,16 +21,7 @@ $(document).ready(function () {
             success: function (data) {
                 var data_obj = $.parseJSON(data);
                 $('.content').html("");
-                for (let i = 0; i <= data_obj.data.length - 1; i++) {
-                    if (!(data_obj.data[i] === '.' || data_obj.data[i] === '..')) {
-                        if (data_obj.data[i].includes('.')) {
-                            $('.content').append(`<div class="d-flex flex-column file-folder p-2" style="margin-right:10px;min-width:60px;"><p><img src="images/file.png" alt=""></p><h6 class="d-flex" style="justify-content:center;">${data_obj.data[i]}</h6></div>`);
-                        }
-                        else {
-                            $('.content').append(`<div class="d-flex flex-column file-folder p-2" style="margin-right:10px;min-width:60px;"><p><img src="images/folder.png" alt=""></p><h6 class="d-flex" style="justify-content:center;">${data_obj.data[i]}</h6></div>`);
-                        }
-                    }
-                }
+                showFilesFolders(data_obj);
             }
         });
     })
@@ -42,16 +36,7 @@ $(document).ready(function () {
         },
         success: function (data) {
             var data_obj = $.parseJSON(data);
-            for (let i = 0; i <= data_obj.data.length - 1; i++) {
-                if (!(data_obj.data[i] === '.' || data_obj.data[i] === '..')) {
-                    if (data_obj.data[i].includes('.')) {
-                        $('.content').append(`<div class="d-flex flex-column file-folder p-2" style="margin-right:10px;min-width:60px;"><p><img src="images/file.png" alt=""></p><h6 class="d-flex" style="justify-content:center;">${data_obj.data[i]}</h6></div>`);
-                    }
-                    else {
-                        $('.content').append(`<div class="d-flex flex-column file-folder p-2" style="margin-right:10px;min-width:60px;"><p><img src="images/folder.png" alt=""></p><h6 class="d-flex" style="justify-content:center;">${data_obj.data[i]}</h6></div>`);
-                    }
-                }
-            }
+            showFilesFolders(data_obj);
         }
     });
 
@@ -88,18 +73,8 @@ $(document).ready(function () {
 
                         if (!data_obj.data == '') {
                             $('.content').html("");
-                            for (let i = 0; i <= data_obj.data.length - 1; i++) {
-
-                                if (!(data_obj.data[i] === '.' || data_obj.data[i] === '..')) {
-                                    if (data_obj.data[i].includes('.')) {
-                                        $('.content').append(`<div class="d-flex flex-column file-folder" style="margin-right:10px;min-width:60px;"><p><img src="images/file.png" alt=""></p><h6 class="d-flex" style="justify-content:center;">${data_obj.data[i]}</h6></div>`);
-                                    }
-                                    else {
-
-                                        $('.content').append(`<div class="d-flex flex-column file-folder" style="margin-right:10px;min-width:60px;"><p><img src="images/folder.png" alt=""></p><h6 class="d-flex" style="justify-content:center;">${data_obj.data[i]}</h6></div>`);
-                                    }
-                                }
-                            }
+                            showFilesFolders(data_obj);
+                            
                         } else {
                             alert("folder already exists !!!");
                         }
@@ -127,7 +102,6 @@ $(document).ready(function () {
     // when we enter name of the file and submit
     $(document).on('click', '#file_button', function () {
         var file_name = $('#file_name').val();
-
         if (validateFileName(file_name)) {
             var old_name = $('#old_name').val();
             var action = $('#action').val();
@@ -143,26 +117,13 @@ $(document).ready(function () {
 
                         if (!data_obj.data == '') {
                             $('.content').html("");
-                            for (let i = 0; i <= data_obj.data.length - 1; i++) {
-                                if (!(data_obj.data[i] === '.' || data_obj.data[i] === '..')) {
-                                    if (data_obj.data[i].includes('.')) {
-
-                                        $('.content').append(`<div class="d-flex flex-column file-folder" style="margin-right:10px;min-width:60px;"><p><img src="images/file.png" alt=""></p><h6 class="d-flex" style="justify-content:center;">${data_obj.data[i]}</h6></div>`);
-                                    }
-                                    else {
-
-                                        $('.content').append(`<div class="d-flex flex-column file-folder" style="margin-right:10px;min-width:60px;"><p><img src="images/folder.png" alt=""></p><h6 class="d-flex" style="justify-content:center;">${data_obj.data[i]}</h6></div>`);
-                                    }
-                                }
-                            }
-
+                            showFilesFolders(data_obj);
                         } else {
                             alert("File already exists !!!");
                         }
                     }
                 });
             }
-
         }
     });
 
@@ -177,13 +138,11 @@ $(document).ready(function () {
         $('.file-folder').removeClass('background-color');
         $(this).addClass('background-color');
         name_of_file_folder = $(this).find('h6').text();
-
     })
 
     // click event for delete button 
     $(document).on('click', '.delete', function () {
         var path = $('.back').attr('data-path');
-
         if (confirm('Are you sure to delete ?')) {
             $.ajax({
                 url: "action.php",
@@ -197,17 +156,7 @@ $(document).ready(function () {
                     console.log('data-----', data)
                     var data_obj = $.parseJSON(data);
                     $('.content').html('');
-
-                    for (let i = 0; i <= data_obj.data.length - 1; i++) {
-                        if (!(data_obj.data[i] === '.' || data_obj.data[i] === '..')) {
-                            if (data_obj.data[i].includes('.')) {
-                                $('.content').append(`<div class="d-flex flex-column file-folder p-2" style="margin-right:10px;min-width:60px;"><p><img src="images/file.png" alt=""></p><h6 class="d-flex" style="justify-content:center;">${data_obj.data[i]}</h6></div>`);
-                            }
-                            else {
-                                $('.content').append(`<div class="d-flex flex-column file-folder p-2" style="margin-right:10px;min-width:60px;"><p><img src="images/folder.png" alt=""></p><h6 class="d-flex" style="justify-content:center;">${data_obj.data[i]}</h6></div>`);
-                            }
-                        }
-                    }
+                    showFilesFolders(data_obj);
                 }
             });
         }
@@ -223,7 +172,6 @@ $(document).ready(function () {
     // click event when rename button is pressed
     $(document).on('click', '.rename', function () {
         $(".error").hide();
-
         $('#action').val("rename");
         $('#new_name').val('');
         $('#new_button').val('Create');
@@ -251,19 +199,7 @@ $(document).ready(function () {
 
                         if (!data_obj.data == '') {
                             $('.content').html("");
-                            for (let i = 0; i <= data_obj.data.length - 1; i++) {
-                                if (!(data_obj.data[i] === '.' || data_obj.data[i] === '..')) {
-                                    if (data_obj.data[i].includes('.')) {
-
-                                        $('.content').append(`<div
-                                         class="d-flex flex-column file-folder" style="margin-right:10px;min-width:60px;"><p><img src="images/file.png" alt=""></p><h6 class="d-flex" style="justify-content:center;">${data_obj.data[i]}</h6></div>`);
-                                    }
-                                    else {
-
-                                        $('.content').append(`<div class="d-flex flex-column file-folder" style="margin-right:10px;min-width:60px;"><p><img src="images/folder.png" alt=""></p><h6 class="d-flex" style="justify-content:center;">${data_obj.data[i]}</h6></div>`);
-                                    }
-                                }
-                            }
+                            showFilesFolders(data_obj);
                         } else {
                             alert("File already exists !!!");
                         }
@@ -275,18 +211,16 @@ $(document).ready(function () {
 
     // to enter into subfolders 
     $(document).on('dblclick', '.file-folder', function () {
-        
-        var temp_path = $(".back").attr('data-path');
+        if($(this).hasClass('folder')){
+            var temp_path = $(".back").attr('data-path');
         var name = $(this).find('h6').text();
         var updated_path = temp_path + '/' + name;
-
         $("li.folder a").each(function (index) {
             if ($(this).text() == name) {
                 $(this).trigger("click");
             }
         });
 
-        // $(".back").attr("data-path",updated_path);
         $.ajax({
             url: "action.php",
             method: "POST",
@@ -297,25 +231,12 @@ $(document).ready(function () {
             },
             success: function (data) {
                 var data_obj = $.parseJSON(data);
-
-                // $('.back').attr("data-path",`${data_obj.fname}`);
                 $(".back").attr("data-path", updated_path);
                 $('.content').html('');
-
-                for (let i = 0; i <= data_obj.data.length - 1; i++) {
-
-                    if (!(data_obj.data[i] === '.' || data_obj.data[i] === '..')) {
-
-                        if (data_obj.data[i].includes('.')) {
-                            $('.content').append(`<div class="d-flex flex-column file-folder" style="margin-right:10px;min-width:60px;"><p><img src="images/file.png" alt=""></p><h6 class="d-flex" style="justify-content:center;">${data_obj.data[i]}</h6></div>`);
-                        }
-                        else {
-                            $('.content').append(`<div class="d-flex flex-column file-folder" style="margin-right:10px;min-width:60px;"><p><img src="images/folder.png" alt=""></p><h6 class="d-flex" style="justify-content:center;">${data_obj.data[i]}</h6></div>`);
-                        }
-                    }
-                }
+                showFilesFolders(data_obj)
             }
         });
+        }
     })
 
     // click event when back is clicked 
@@ -347,17 +268,7 @@ $(document).ready(function () {
                 success: function (data) {
                     var data_obj = $.parseJSON(data);
                     $('.content').html('');
-                    for (let i = 0; i <= data_obj.data.length - 1; i++) {
-
-                        if (!(data_obj.data[i] === '.' || data_obj.data[i] === '..')) {
-                            if (data_obj.data[i].includes('.')) {
-                                $('.content').append(`<div class="d-flex flex-column file-folder p-2" style="margin-right:10px;min-width:60px;"><p><img src="images/file.png" alt=""></p><h6 class="d-flex" style="justify-content:center;">${data_obj.data[i]}</h6></div>`);
-                            }
-                            else {
-                                $('.content').append(`<div class="d-flex flex-column file-folder p-2" style="margin-right:10px;min-width:60px;"><p><img src="images/folder.png" alt=""></p><h6 class="d-flex" style="justify-content:center;">${data_obj.data[i]}</h6></div>`);
-                            }
-                        }
-                    }
+                    showFilesFolders(data_obj);
                 }
             });
         }
@@ -387,21 +298,10 @@ $(document).ready(function () {
                     is_cut = false;
                     var data_obj = $.parseJSON(data);
                     $('.content').html('');
-                    for (let i = 0; i <= data_obj.data.length - 1; i++) {
-
-                        if (!(data_obj.data[i] === '.' || data_obj.data[i] === '..')) {
-                            if (data_obj.data[i].includes('.')) {
-                                $('.content').append(`<div class="d-flex flex-column file-folder p-2" style="margin-right:10px;min-width:60px;"><p><img src="images/file.png" alt=""></p><h6 class="d-flex" style="justify-content:center;">${data_obj.data[i]}</h6></div>`);
-                            }
-                            else {
-                                $('.content').append(`<div class="d-flex flex-column file-folder p-2" style="margin-right:10px;min-width:60px;"><p><img src="images/folder.png" alt=""></p><h6 class="d-flex" style="justify-content:center;">${data_obj.data[i]}</h6></div>`);
-                            }
-                        }
-                    }
+                    showFilesFolders(data_obj);
                 }
             });
         }
-
     })
 
     // click event for cut button 
@@ -411,7 +311,6 @@ $(document).ready(function () {
         path_of_copied_folder = $('.back').attr('data-path');
         cut_path_ = $('.back').attr('data-path');
         is_cut = true;
-
     })
 
     // validation for folder name 
@@ -431,7 +330,7 @@ $(document).ready(function () {
     // validation for file name 
     function validateFileName(file_name) {
 
-        var re = /([a-z0-9])*\.(png|txt|jpeg|jpg|xls)$/i;
+        var re = /([a-z0-9])*\.(png|txt|jpeg|jpg|xls|php|css|js)$/i;
         if (!re.test(file_name)) {
             // alert("Error: Input contains invalid characters!");
             $(".error").show();
@@ -456,7 +355,6 @@ $(document).ready(function () {
             });
     });
 
-
     // If the document is clicked somewhere
     $(document).bind("mousedown", function (e) {
         // If the clicked element is not the menu
@@ -472,7 +370,8 @@ $(document).ready(function () {
         $(".custom-menu").hide(100);
     });
 
-    // directory tree view ---------------------------------
+    //--------------------- directory tree view---------------------- 
+    //---------------------------------------------------------------
 
     $('#container').html('<ul class="filetree start"><li class="wait">' + 'Generating Tree...' + '<li></ul>');
 
@@ -481,7 +380,6 @@ $(document).ready(function () {
     function getfilelist(cont, root) {
 
         $(cont).addClass('wait');
-
         $.post('foldertree.php', { dir: root }, function (data) {
 
             $(cont).find('.start').html('');
@@ -539,19 +437,22 @@ $(document).ready(function () {
             success: function (data) {
                 var data_obj = $.parseJSON(data);
                 $('.content').html("");
-                for (let i = 0; i <= data_obj.data.length - 1; i++) {
-                    if (!(data_obj.data[i] === '.' || data_obj.data[i] === '..')) {
-                        if (data_obj.data[i].includes('.')) {
-                            $('.content').append(`<div class="d-flex flex-column file-folder p-2" style="margin-right:10px;min-width:60px;"><p><img src="images/file.png" alt=""></p><h6 class="d-flex" style="justify-content:center;">${data_obj.data[i]}</h6></div>`);
-                        }
-                        else {
-                            $('.content').append(`<div class="d-flex flex-column file-folder p-2" style="margin-right:10px;min-width:60px;"><p><img src="images/folder.png" alt=""></p><h6 class="d-flex" style="justify-content:center;">${data_obj.data[i]}</h6></div>`);
-                        }
-                    }
-                }
+                showFilesFolders(data_obj);
             }
         });
-
     })
-
+    
+    function showFilesFolders(data_obj){
+        
+        for (let i = 0; i <= data_obj.data.length - 1; i++) {
+            if (!(data_obj.data[i] === '.' || data_obj.data[i] === '..')) {
+                if (validateFileName(data_obj.data[i])) {
+                    $('.content').append(`<div class="d-flex flex-column file-folder file p-2" style="margin-right:10px;min-width:60px;"><p><img src="images/file.png" alt=""></p><h6 class="d-flex" style="justify-content:center;">${data_obj.data[i]}</h6></div>`);
+                }
+                else if(validateFolderName(data_obj.data[i])){
+                    $('.content').append(`<div class="d-flex flex-column file-folder folder p-2" style="margin-right:10px;min-width:60px;"><p><img src="images/folder.png" alt=""></p><h6 class="d-flex" style="justify-content:center;">${data_obj.data[i]}</h6></div>`);
+                }
+            }
+        }
+    }
 })
